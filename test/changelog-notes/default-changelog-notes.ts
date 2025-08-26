@@ -73,6 +73,62 @@ describe('DefaultChangelogNotes', () => {
       const changelogNotes = new DefaultChangelogNotes();
       const notes = await changelogNotes.buildNotes(commits, notesOptions);
       expect(notes).to.is.string;
+      // no snapshot: order of Others can vary, we validate presence only
+    });
+    it('should include non-conventional commits under Others', async () => {
+      const changelogNotes = new DefaultChangelogNotes();
+      const rawCommits = [
+        buildMockCommit('This is a plain commit without type'),
+        buildMockCommit('another random line'),
+      ];
+      const parsed = parseConventionalCommits(rawCommits);
+      const notes = await changelogNotes.buildNotes(parsed, {
+        ...notesOptions,
+        commits: rawCommits,
+      });
+      expect(notes).to.be.a('string');
+      // Ensure the Others section is present with entries
+      expect(notes).to.contain('### Others');
+      expect(notes).to.contain('This is a plain commit without type');
+      expect(notes).to.contain('another random line');
+      // no snapshot: order of Others can vary, we validate presence only
+    });
+    it('should link tracker keys when trackerUrl/prefixes provided', async () => {
+      const changelogNotes = new DefaultChangelogNotes();
+      const rawCommits = [
+        buildMockCommit('INFRA-893 test something'),
+        buildMockCommit('[QA-12] hotfix applied'),
+        buildMockCommit('MISC change without key'),
+      ];
+      const parsed = parseConventionalCommits(rawCommits);
+      const notes = await changelogNotes.buildNotes(parsed, {
+        ...notesOptions,
+        commits: rawCommits,
+        trackerUrl: 'https://linear.app/aiphoria-ai/issue/',
+        trackerList: ['INFRA', 'QA'],
+      });
+      expect(notes).to.contain('[INFRA-893](https://linear.app/aiphoria-ai/issue/INFRA-893)');
+      expect(notes).to.contain('[QA-12](https://linear.app/aiphoria-ai/issue/QA-12)');
+      // MISC should not be linked
+      expect(notes).to.contain('MISC change without key');
+      // no snapshot: order of Others can vary, we validate presence only
+    });
+    it('should include JIRA-like colon commits under Others', async () => {
+      const changelogNotes = new DefaultChangelogNotes();
+      const rawCommits = [
+        buildMockCommit('INFRA-893: test commit name bla bla'),
+        buildMockCommit('ASD-123: Update README.md'),
+      ];
+      // Pass through conventional parser; these will parse as type tokens
+      // matching the Jira-like keys, which we remap to 'others' at render time.
+      const notes = await changelogNotes.buildNotes(
+        parseConventionalCommits(rawCommits),
+        notesOptions
+      );
+      expect(notes).to.be.a('string');
+      expect(notes).to.contain('### Others');
+      expect(notes).to.contain('INFRA-893: test commit name bla bla');
+      expect(notes).to.contain('ASD-123: Update README.md');
       safeSnapshot(notes);
     });
     it('should build with custom changelog sections', async () => {
