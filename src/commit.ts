@@ -391,7 +391,9 @@ function splitMessages(message: string): string[] {
     .split(
       /\r?\n\r?\n(?=(?:\* )?(?:feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(?:\(.*?\))?: )/
     )
-    .filter(Boolean);
+    .filter(Boolean)
+    .map(commit => commit.replace(/^\* /, '')); // Удаляем маркер * в начале строки
+  
   return [...conventionalCommits, ...messages.slice(1)];
 }
 
