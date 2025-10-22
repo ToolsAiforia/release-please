@@ -19,11 +19,12 @@ const BREAKING_CHANGE_NOTE = 'BREAKING CHANGE';
 
 const DEFAULT_CHANGELOG_SECTIONS = [
   {type: 'feat', section: 'Features'},
+  {type: 'feature', section: 'Features'},
   {type: 'fix', section: 'Bug Fixes'},
   {type: 'perf', section: 'Performance Improvements'},
   {type: 'revert', section: 'Reverts'},
   {type: 'others', section: 'Others'},
-  {type: 'chore', section: 'Miscellaneous Chores', hidden: true},
+  {type: 'chore', section: 'Miscellaneous Chores'},
   {type: 'docs', section: 'Documentation', hidden: true},
   {type: 'style', section: 'Styles', hidden: true},
   {type: 'refactor', section: 'Code Refactoring', hidden: true},

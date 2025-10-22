@@ -121,7 +121,7 @@ export class DefaultChangelogNotes implements ChangelogNotes {
     // Add raw commits that look like issue-key headers but were not parsed as conventional commits
     if (options.commits) {
       const rawIssueHeader = /^(\[[A-Z][A-Z0-9]+-\d+\]|[A-Z][A-Z0-9]+-\d+)\b/;
-      const conventionalHeader = /^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.*?\))?:\s/;
+      const conventionalHeader = /^(feat|feature|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.*?\))?:\s/;
       const mergeHeader = /^Merge\b/;
       const skipRelease = /release[- ]please|^chore\(main\): release/i;
       for (const raw of options.commits) {
